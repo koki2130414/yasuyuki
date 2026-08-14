@@ -1,0 +1,400 @@
+<html lang="ja"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>日々の記録</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap');
+
+  :root{
+    /* morning palette */
+    --m-bg1:#FFF3DE;
+    --m-bg2:#FFD9A0;
+    --m-accent:#E8874A;
+    --m-ink:#5B3A21;
+    --m-card:#FFFCF6;
+
+    /* evening palette */
+    --e-bg1:#1B1F3B;
+    --e-bg2:#3A2E5C;
+    --e-accent:#F2B77D;
+    --e-ink:#EDE7F6;
+    --e-card:#252B4E;
+
+    /* both palette */
+    --b-bg1:#EFE7FB;
+    --b-bg2:#D9C7F0;
+    --b-accent:#8A5FC7;
+    --b-ink:#3E2A5C;
+    --b-card:#FBF8FF;
+
+    --transition: 700ms cubic-bezier(.4,0,.2,1);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'Zen Kaku Gothic New','Zen Maru Gothic',sans-serif;
+    background: linear-gradient(160deg, var(--bg1), var(--bg2));
+    color: var(--ink);
+    transition: background var(--transition), color var(--transition);
+    overflow-x:hidden;
+  }
+
+  body.morning{
+    --bg1:var(--m-bg1); --bg2:var(--m-bg2); --accent:var(--m-accent); --ink:var(--m-ink); --card:var(--m-card);
+  }
+  body.evening{
+    --bg1:var(--e-bg1); --bg2:var(--e-bg2); --accent:var(--e-accent); --ink:var(--e-ink); --card:var(--e-card);
+  }
+  body.both{
+    --bg1:var(--b-bg1); --bg2:var(--b-bg2); --accent:var(--b-accent); --ink:var(--b-ink); --card:var(--b-card);
+  }
+
+  .wrap{
+    max-width:480px;
+    margin:0 auto;
+    padding:28px 18px 40px;
+    position:relative;
+    z-index:1;
+  }
+
+  .title{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-weight:700;
+    font-size:1.5rem;
+    text-align:center;
+    letter-spacing:.02em;
+  }
+  .subtitle{
+    text-align:center;
+    font-size:0.85rem;
+    opacity:0.65;
+    margin-top:4px;
+    margin-bottom:24px;
+  }
+
+  .toggle{
+    display:flex;
+    gap:8px;
+    background: rgba(0,0,0,0.05);
+    padding:6px;
+    border-radius:16px;
+    margin-bottom:22px;
+  }
+  body.evening .toggle{ background: rgba(255,255,255,0.06); }
+
+  .toggle button{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:12px 4px;
+    border-radius:12px;
+    font-family:inherit;
+    font-size:0.85rem;
+    font-weight:500;
+    color:inherit;
+    cursor:pointer;
+    transition: background 200ms, color 200ms, transform 150ms;
+    white-space:nowrap;
+  }
+  .toggle button.active{
+    background: var(--accent);
+    color:#fff;
+    font-weight:700;
+  }
+  .toggle button:active{ transform: scale(0.97); }
+
+  .card{
+    background: var(--card);
+    border-radius:20px;
+    padding:20px 18px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.06);
+  }
+  body.evening .card{ box-shadow: 0 8px 28px rgba(0,0,0,0.25); }
+
+  .group-heading{
+    font-family:'Zen Maru Gothic', sans-serif;
+    font-weight:700;
+    font-size:1.02rem;
+    color: var(--accent);
+    margin: 22px 0 14px;
+    padding-top:18px;
+    border-top: 1.5px dashed rgba(0,0,0,0.12);
+  }
+  body.evening .group-heading{ border-top-color: rgba(255,255,255,0.16); }
+  .group-heading:first-child{ margin-top:0; padding-top:0; border-top:none; }
+
+  .field{ margin-bottom:18px; }
+  .field:last-of-type{ margin-bottom:0; }
+  .field label{
+    display:block;
+    font-size:0.9rem;
+    font-weight:500;
+    margin-bottom:8px;
+    color: var(--accent);
+  }
+  .field input[type="text"], .field textarea, .field input[type="date"]{
+    width:100%;
+    border:1.5px solid rgba(0,0,0,0.1);
+    border-radius:12px;
+    padding:11px 12px;
+    font-family:inherit;
+    font-size:0.95rem;
+    background: rgba(0,0,0,0.02);
+    color:inherit;
+    resize:vertical;
+    transition:border-color 150ms;
+  }
+  body.evening .field input, body.evening .field textarea{
+    border-color: rgba(255,255,255,0.14);
+    background: rgba(255,255,255,0.04);
+  }
+  .field textarea{ min-height:64px; line-height:1.5; }
+  .field input:focus, .field textarea:focus{
+    outline:none;
+    border-color: var(--accent);
+  }
+
+  .date-row{ display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+  .date-row label{ font-size:0.85rem; opacity:0.7; white-space:nowrap; }
+  .date-row input{ flex:1; }
+
+  .output-wrap{ margin-top:22px; }
+  .output-label{
+    font-size:0.8rem;
+    opacity:0.6;
+    margin-bottom:8px;
+  }
+  .output{
+    white-space:pre-wrap;
+    font-size:0.92rem;
+    line-height:1.75;
+    background: rgba(0,0,0,0.03);
+    border-radius:14px;
+    padding:16px;
+    min-height:60px;
+  }
+  body.evening .output{ background: rgba(255,255,255,0.05); }
+
+  .copy-btn{
+    margin-top:16px;
+    width:100%;
+    border:none;
+    padding:15px;
+    border-radius:14px;
+    font-family:inherit;
+    font-weight:700;
+    font-size:1rem;
+    color:#fff;
+    background: var(--accent);
+    cursor:pointer;
+    transition: transform 120ms, filter 150ms;
+    letter-spacing:.03em;
+  }
+  .copy-btn:active{ transform: scale(0.97); }
+  .copy-btn.copied{ filter:brightness(1.15); }
+
+  .hint{
+    text-align:center;
+    font-size:0.75rem;
+    opacity:0.5;
+    margin-top:14px;
+  }
+</style>
+</head>
+<body class="morning">
+
+<div class="wrap">
+  <div class="title">日々の記録</div>
+  <div class="subtitle" id="subtitle">今日もひとつ、書き残そう</div>
+
+  <div class="toggle">
+    <button id="btn-morning" class="active" onclick="setMode('morning')">モニチャ☕️</button>
+    <button id="btn-evening" onclick="setMode('evening')">イブチャ🌙</button>
+    <button id="btn-both" onclick="setMode('both')">両方📋</button>
+  </div>
+
+  <div class="date-row">
+    <label for="date">日付</label>
+    <input type="date" id="date">
+  </div>
+
+  <div class="card" id="fields"><div class="field"><label>感謝し続けること😊</label><textarea></textarea></div><div class="field"><label>新しく挑戦すること💪</label><textarea></textarea></div></div>
+
+  <div class="output-wrap">
+    <div class="output-label">コピー用テキスト</div>
+    <div class="output" id="output">2026/8/14
+モニチャ 1532
+【感謝し続けること😊】
+
+【新しく挑戦すること💪】
+</div>
+    <button class="copy-btn" id="copyBtn" onclick="copyOutput()">コピーする</button>
+  </div>
+
+  <div class="hint">入力内容はモードごとに保持されます</div>
+</div>
+
+<script>
+const TEMPLATES = {
+  morning: {
+    heading: 'モニチャ',
+    fields: [
+      { key:'gratitude', tag:'【感謝し続けること😊】', label:'感謝し続けること😊' },
+      { key:'challenge', tag:'【新しく挑戦すること💪】', label:'新しく挑戦すること💪' }
+    ]
+  },
+  evening: {
+    heading: 'イブチャ',
+    fields: [
+      { key:'happy', tag:'【嬉しかった事😊】', label:'嬉しかった事😊' },
+      { key:'thanks', tag:'【感謝した事🙏】', label:'感謝した事🙏' },
+      { key:'growth', tag:'【成長したこと💪】', label:'成長したこと💪' }
+    ]
+  }
+};
+
+let mode = 'morning';
+// keep separate in-memory values per mode so switching doesn't lose input
+// the "both" tab reads/writes the same morning/evening values, so entries stay in sync
+const values = { morning:{}, evening:{} };
+
+// reference point: 2026-07-14 is the 1501st time. Count increases by 1 each calendar day.
+const REF_DATE = new Date(2026, 6, 14); // month is 0-indexed: 6 = July
+const REF_COUNT = 1501;
+
+function dayCount(dateISO){
+  const [y,m,d] = dateISO.split('-').map(Number);
+  const target = new Date(y, m-1, d);
+  const msPerDay = 24*60*60*1000;
+  const diff = Math.round((target - REF_DATE) / msPerDay);
+  return REF_COUNT + diff;
+}
+
+function todayISO(){
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+
+function formatDate(d){
+  const [y,m,day] = d.split('-');
+  return `${y}/${parseInt(m)}/${parseInt(day)}`;
+}
+
+function renderFieldGroup(container, groupMode){
+  TEMPLATES[groupMode].fields.forEach(f=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'field';
+    const label = document.createElement('label');
+    label.textContent = f.label;
+    const ta = document.createElement('textarea');
+    ta.value = values[groupMode][f.key] || '';
+    ta.addEventListener('input', (e)=>{
+      values[groupMode][f.key] = e.target.value;
+      updateOutput();
+    });
+    wrap.appendChild(label);
+    wrap.appendChild(ta);
+    container.appendChild(wrap);
+  });
+}
+
+function renderFields(){
+  const container = document.getElementById('fields');
+  container.innerHTML = '';
+  if(mode === 'both'){
+    const h1 = document.createElement('div');
+    h1.className = 'group-heading';
+    h1.textContent = `☕️ ${TEMPLATES.morning.heading}`;
+    container.appendChild(h1);
+    renderFieldGroup(container, 'morning');
+
+    const h2 = document.createElement('div');
+    h2.className = 'group-heading';
+    h2.textContent = `🌙 ${TEMPLATES.evening.heading}`;
+    container.appendChild(h2);
+    renderFieldGroup(container, 'evening');
+  } else {
+    renderFieldGroup(container, mode);
+  }
+}
+
+function buildBlock(blockMode, count){
+  let lines = [];
+  lines.push(`${TEMPLATES[blockMode].heading} ${count}`);
+  TEMPLATES[blockMode].fields.forEach(f=>{
+    lines.push(f.tag);
+    lines.push(values[blockMode][f.key] || '');
+  });
+  return lines;
+}
+
+function updateOutput(){
+  const dateVal = document.getElementById('date').value;
+  const dateStr = dateVal ? formatDate(dateVal) : '';
+  const count = dateVal ? dayCount(dateVal) : REF_COUNT;
+  let lines = [];
+  lines.push(dateStr);
+  if(mode === 'both'){
+    lines.push(...buildBlock('morning', count));
+    lines.push('');
+    lines.push(...buildBlock('evening', count));
+  } else {
+    lines.push(...buildBlock(mode, count));
+  }
+  document.getElementById('output').textContent = lines.join('\n');
+}
+
+const SUBTITLES = {
+  morning: '今日もひとつ、書き残そう',
+  evening: '一日を振り返って、書き残そう',
+  both: 'モニチャとイブチャ、まとめて記録'
+};
+
+function setMode(newMode){
+  mode = newMode;
+  document.body.className = mode;
+  document.getElementById('btn-morning').classList.toggle('active', mode==='morning');
+  document.getElementById('btn-evening').classList.toggle('active', mode==='evening');
+  document.getElementById('btn-both').classList.toggle('active', mode==='both');
+  document.getElementById('subtitle').textContent = SUBTITLES[mode];
+  renderFields();
+  updateOutput();
+}
+
+async function copyOutput(){
+  const text = document.getElementById('output').textContent;
+  const btn = document.getElementById('copyBtn');
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(e){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  }
+  btn.textContent = 'コピーしました ✓';
+  btn.classList.add('copied');
+  setTimeout(()=>{
+    btn.textContent = 'コピーする';
+    btn.classList.remove('copied');
+  }, 1600);
+}
+
+document.getElementById('date').value = todayISO();
+document.getElementById('date').addEventListener('input', updateOutput);
+
+renderFields();
+updateOutput();
+</script>
+
+
+
+</body></html>
